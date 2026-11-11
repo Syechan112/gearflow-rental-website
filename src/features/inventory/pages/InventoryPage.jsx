@@ -2,76 +2,112 @@ import React, { useEffect, useState } from 'react';
 import { PageContainer } from '@/components/common/PageContainer';
 import { PageHeader } from '@/components/common/PageHeader';
 import { equipmentRepository } from '@/database/repositories/equipmentRepository';
-import { formatCurrency } from '@/utils/formatCurrency';
-import { Badge } from '@/components/ui/Badge';
+import { categoryRepository } from '@/database/repositories/categoryRepository';
+import { unitRepository } from '@/database/repositories/unitRepository';
+import { InventoryFilterBar } from '../components/InventoryFilterBar';
+import { InventoryTable } from '../components/InventoryTable';
+import { EquipmentModal } from '../components/EquipmentModal';
+import { CategoryModal } from '../components/CategoryModal';
+import { UnitManagerModal } from '../components/UnitManagerModal';
 import { Button } from '@/components/ui/Button';
-import { Plus, Package, Layers } from 'lucide-react';
+import { Plus, Tag } from 'lucide-react';
+import { toast } from 'sonner';
 
 export function InventoryPage() {
   const [equipment, setEquipment] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [units, setUnits] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const [isEqModalOpen, setIsEqModalOpen] = useState(false);
+  const [editingEq, setEditingEq] = useState(null);
+  const [isCatModalOpen, setIsCatModalOpen] = useState(false);
+  const [managingUnitsEq, setManagingUnitsEq] = useState(null);
+
+  const loadData = async () => {
+    const [eq, cats, unts] = await Promise.all([
+      equipmentRepository.getAll(),
+      categoryRepository.getAll(),
+      unitRepository.getAll(),
+    ]);
+    setEquipment(eq);
+    setCategories(cats);
+    setUnits(unts);
+  };
 
   useEffect(() => {
-    async function load() {
-      const [eq, unts] = await Promise.all([
-        equipmentRepository.getAll(),
-        equipmentRepository.getAllUnits(),
-      ]);
-      setEquipment(eq);
-      setUnits(unts);
-    }
-    load();
+    loadData();
   }, []);
+
+  const handleDelete = async (id) => {
+    if (window.confirm('Apakah Anda yakin ingin menghapus peralatan ini beserta unit fisiknya?')) {
+      await equipmentRepository.delete(id);
+      toast.success('Peralatan berhasil dihapus');
+      loadData();
+    }
+  };
+
+  const filteredEquipment = equipment.filter((item) => {
+    const matchesCat = selectedCategory === 'all' || item.category_id === selectedCategory;
+    const q = searchQuery.toLowerCase();
+    const matchesQuery = !q || item.name.toLowerCase().includes(q) || item.brand.toLowerCase().includes(q) || item.model.toLowerCase().includes(q);
+    return matchesCat && matchesQuery;
+  });
 
   return (
     <PageContainer>
       <PageHeader
         title="Inventaris & Manajemen Unit"
         description="Daftar peralatan, tarif sewa harian, jumlah total stok, serta pelacakan nomor seri unit fisik."
-        action={<Button size="sm" icon={Plus}>Tambah Peralatan</Button>}
+        action={
+          <div className="flex gap-2">
+            <Button size="sm" variant="secondary" icon={Tag} onClick={() => setIsCatModalOpen(true)}>
+              Kategori
+            </Button>
+            <Button size="sm" icon={Plus} onClick={() => { setEditingEq(null); setIsEqModalOpen(true); }}>
+              Tambah Alat
+            </Button>
+          </div>
+        }
       />
 
-      <div className="bg-white border border-neutral-200 rounded-card overflow-hidden shadow-sm">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-neutral-50 text-neutral-500 uppercase tracking-wider font-semibold border-b border-neutral-200">
-              <tr>
-                <th className="px-5 py-3.5">Peralatan</th>
-                <th className="px-5 py-3.5">Merk & Model</th>
-                <th className="px-5 py-3.5">Tarif Sewa</th>
-                <th className="px-5 py-3.5">Deposit</th>
-                <th className="px-5 py-3.5">Total Stok</th>
-                <th className="px-5 py-3.5 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-neutral-100">
-              {equipment.map((item) => {
-                const itemUnits = units.filter((u) => u.equipment_id === item.id);
-                return (
-                  <tr key={item.id} className="hover:bg-neutral-50/80 transition-colors">
-                    <td className="px-5 py-3.5 flex items-center gap-3">
-                      <img src={item.image_url} alt="" className="w-10 h-10 object-cover rounded-btn border border-neutral-200" />
-                      <div>
-                        <p className="font-semibold text-neutral-900">{item.name}</p>
-                        <p className="text-[11px] text-neutral-400">{item.id}</p>
-                      </div>
-                    </td>
-                    <td className="px-5 py-3.5 text-neutral-700">{item.brand} — {item.model}</td>
-                    <td className="px-5 py-3.5 font-semibold text-neutral-900">{formatCurrency(item.daily_price)} / hari</td>
-                    <td className="px-5 py-3.5 text-neutral-600">{formatCurrency(item.deposit_amount)}</td>
-                    <td className="px-5 py-3.5">
-                      <span className="font-medium text-neutral-800">{itemUnits.length} Unit Fisik</span>
-                    </td>
-                    <td className="px-5 py-3.5 text-right">
-                      <button className="text-primary hover:underline font-semibold cursor-pointer">Detail Unit</button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <InventoryFilterBar
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        selectedCategory={selectedCategory}
+        onCategoryChange={setSelectedCategory}
+        categories={categories}
+      />
+
+      <InventoryTable
+        equipment={filteredEquipment}
+        units={units}
+        onEdit={(item) => { setEditingEq(item); setIsEqModalOpen(true); }}
+        onManageUnits={(item) => setManagingUnitsEq(item)}
+        onDelete={handleDelete}
+      />
+
+      <EquipmentModal
+        isOpen={isEqModalOpen}
+        onClose={() => { setIsEqModalOpen(false); setEditingEq(null); }}
+        initialData={editingEq}
+        categories={categories}
+        onSuccess={loadData}
+      />
+
+      <CategoryModal
+        isOpen={isCatModalOpen}
+        onClose={() => setIsCatModalOpen(false)}
+        onSuccess={loadData}
+      />
+
+      <UnitManagerModal
+        isOpen={!!managingUnitsEq}
+        equipment={managingUnitsEq}
+        onClose={() => setManagingUnitsEq(null)}
+        onUpdated={loadData}
+      />
     </PageContainer>
   );
 }
