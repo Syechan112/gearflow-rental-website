@@ -1,5 +1,5 @@
 import { db } from '../local/db';
-import { BOOKING_STATUS } from '@/constants/statuses';
+import { BOOKING_STATUS, UNIT_STATUS } from '@/constants/statuses';
 
 export const bookingRepository = {
   async getAll(businessId) {
@@ -17,21 +17,42 @@ export const bookingRepository = {
     return await db.bookings.where('customer_id').equals(customerId).toArray();
   },
 
-  async getByStatus(status, businessId) {
-    let collection = db.bookings.where('status').equals(status);
-    if (businessId) {
-      return await collection.filter(b => b.business_id === businessId).toArray();
-    }
-    return await collection.toArray();
-  },
-
   async create(booking) {
     await db.bookings.add(booking);
     return booking;
   },
 
-  async updateStatus(id, status) {
-    await db.bookings.update(id, { status, updatedAt: new Date().toISOString() });
+  async updateStatus(id, status, notes = '') {
+    const updateData = { status, updatedAt: new Date().toISOString() };
+    if (notes) updateData.admin_notes = notes;
+    await db.bookings.update(id, updateData);
     return await this.getById(id);
+  },
+
+  async checkAvailability(equipmentId, startDate, endDate, excludeBookingId = null) {
+    const units = await db.equipment_units
+      .where('equipment_id')
+      .equals(equipmentId)
+      .filter((u) => u.status !== UNIT_STATUS.MAINTENANCE && u.status !== UNIT_STATUS.DAMAGED)
+      .toArray();
+
+    const activeBookings = await db.bookings
+      .where('equipment_id')
+      .equals(equipmentId)
+      .filter((b) => {
+        if (excludeBookingId && b.id === excludeBookingId) return false;
+        if (b.status !== BOOKING_STATUS.APPROVED && b.status !== BOOKING_STATUS.PENDING) return false;
+        // Check date overlap: (StartA <= EndB) and (EndA >= StartB)
+        return startDate <= b.end_date && endDate >= b.start_date;
+      })
+      .toArray();
+
+    const availableSlots = Math.max(0, units.length - activeBookings.length);
+    return {
+      isAvailable: availableSlots > 0,
+      totalUnits: units.length,
+      bookedSlots: activeBookings.length,
+      availableSlots,
+    };
   },
 };

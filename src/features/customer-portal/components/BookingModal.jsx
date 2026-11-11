@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Modal } from '@/components/ui/Modal';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
+import { Badge } from '@/components/ui/Badge';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { generateId } from '@/utils/generateId';
 import { BOOKING_STATUS } from '@/constants/statuses';
@@ -14,7 +15,18 @@ export function BookingModal({ equipment, isOpen, onClose, onSuccess }) {
   const [startDate, setStartDate] = useState('2026-11-15');
   const [endDate, setEndDate] = useState('2026-11-17');
   const [notes, setNotes] = useState('');
+  const [availability, setAvailability] = useState({ isAvailable: true, availableSlots: 1 });
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    async function check() {
+      if (equipment?.id && startDate && endDate) {
+        const res = await bookingRepository.checkAvailability(equipment.id, startDate, endDate);
+        setAvailability(res);
+      }
+    }
+    if (isOpen && equipment) check();
+  }, [equipment, startDate, endDate, isOpen]);
 
   if (!equipment) return null;
 
@@ -22,6 +34,9 @@ export function BookingModal({ equipment, isOpen, onClose, onSuccess }) {
   const totalPrice = equipment.daily_price * days;
 
   const handleCreateBooking = async () => {
+    if (!availability.isAvailable) {
+      return toast.error('Peralatan tidak tersedia pada rentang tanggal ini (jadwal bentrok).');
+    }
     setIsSubmitting(true);
     try {
       const newBooking = {
@@ -58,24 +73,32 @@ export function BookingModal({ equipment, isOpen, onClose, onSuccess }) {
       footer={
         <>
           <Button variant="ghost" onClick={onClose}>Batal</Button>
-          <Button isLoading={isSubmitting} onClick={handleCreateBooking}>Konfirmasi Sewa</Button>
+          <Button isLoading={isSubmitting} disabled={!availability.isAvailable} onClick={handleCreateBooking}>
+            Konfirmasi Sewa
+          </Button>
         </>
       }
     >
-      <div className="space-y-4">
+      <div className="space-y-3.5 text-xs">
         <div className="flex items-center gap-3 p-3 bg-neutral-50 rounded-btn border border-neutral-200">
           <img src={equipment.image_url} alt="" className="w-12 h-12 object-cover rounded-btn" />
           <div>
-            <p className="text-xs font-semibold text-neutral-900">{equipment.name}</p>
-            <p className="text-xs text-primary font-bold">{formatCurrency(equipment.daily_price)} / hari</p>
+            <p className="font-semibold text-neutral-900">{equipment.name}</p>
+            <p className="text-primary font-bold">{formatCurrency(equipment.daily_price)} / hari</p>
           </div>
         </div>
         <div className="grid grid-cols-2 gap-3">
           <Input label="Tanggal Mulai" type="date" value={startDate} onChange={(e) => setStartDate(e.target.value)} />
           <Input label="Tanggal Selesai" type="date" value={endDate} onChange={(e) => setEndDate(e.target.value)} />
         </div>
+        <div className="flex items-center justify-between p-2.5 bg-neutral-50 rounded-btn border border-neutral-200">
+          <span className="text-neutral-600">Ketersediaan Unit:</span>
+          <Badge variant={availability.isAvailable ? 'success' : 'danger'}>
+            {availability.isAvailable ? `Tersedia (${availability.availableSlots} unit bebas)` : 'Penuh / Bentrok'}
+          </Badge>
+        </div>
         <Input label="Catatan Penggunaan" placeholder="Keperluan shooting / trip..." value={notes} onChange={(e) => setNotes(e.target.value)} />
-        <div className="p-3 bg-primary-light/40 rounded-btn flex justify-between items-center text-xs">
+        <div className="p-3 bg-primary-light/40 rounded-btn flex justify-between items-center">
           <span className="text-neutral-700">Estimasi Total ({days} Hari):</span>
           <span className="text-base font-bold text-primary">{formatCurrency(totalPrice)}</span>
         </div>
