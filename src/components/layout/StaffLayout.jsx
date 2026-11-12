@@ -1,12 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Outlet } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { Sidebar } from './Sidebar';
 import { ROUTES } from '@/constants/routes';
-import { bookingRepository } from '@/database/repositories/bookingRepository';
-import { rentalRepository } from '@/database/repositories/rentalRepository';
-import { unitRepository } from '@/database/repositories/unitRepository';
-import { BOOKING_STATUS, RENTAL_STATUS, UNIT_STATUS } from '@/constants/statuses';
+import { useStaffBadgeCounts } from '@/hooks/useBadgeCounts';
 import {
   LayoutDashboard,
   Package,
@@ -19,24 +16,7 @@ import {
 
 export function StaffLayout() {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [counts, setCounts] = useState({ pending: 0, checkout: 0, returns: 0, maint: 0 });
-
-  useEffect(() => {
-    async function loadCounts() {
-      const [bookings, rentals, units] = await Promise.all([
-        bookingRepository.getAll(),
-        rentalRepository.getAll(),
-        unitRepository.getAll(),
-      ]);
-      setCounts({
-        pending: bookings.filter((b) => b.status === BOOKING_STATUS.PENDING).length,
-        checkout: bookings.filter((b) => b.status === BOOKING_STATUS.APPROVED).length,
-        returns: rentals.filter((r) => r.status === RENTAL_STATUS.ONGOING || r.status === 'overdue').length,
-        maint: units.filter((u) => u.status === UNIT_STATUS.MAINTENANCE).length,
-      });
-    }
-    loadCounts();
-  }, []);
+  const counts = useStaffBadgeCounts();
 
   const navItems = [
     { to: ROUTES.STAFF_DASHBOARD, label: 'Dashboard Operasional', icon: LayoutDashboard },

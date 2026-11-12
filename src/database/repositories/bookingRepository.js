@@ -1,6 +1,7 @@
 import { db } from '../local/db';
 import { BOOKING_STATUS, UNIT_STATUS } from '@/constants/statuses';
 import { resolveCustomerIds } from '@/utils/resolveCustomerIds';
+import { notifyDbChange } from '@/utils/dbEvents';
 
 export const bookingRepository = {
   async getAll(businessId) {
@@ -21,6 +22,7 @@ export const bookingRepository = {
 
   async create(booking) {
     await db.bookings.add(booking);
+    notifyDbChange();
     return booking;
   },
 
@@ -28,6 +30,7 @@ export const bookingRepository = {
     const updateData = { status, updatedAt: new Date().toISOString() };
     if (notes) updateData.admin_notes = notes;
     await db.bookings.update(id, updateData);
+    notifyDbChange();
     return await this.getById(id);
   },
 

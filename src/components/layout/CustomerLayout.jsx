@@ -1,33 +1,16 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { Navbar } from './Navbar';
 import { CustomerBottomNav } from './CustomerBottomNav';
 import { ROUTES } from '@/constants/routes';
 import { useAuthStore } from '@/stores/authStore';
-import { bookingRepository } from '@/database/repositories/bookingRepository';
-import { rentalRepository } from '@/database/repositories/rentalRepository';
+import { useCustomerBadgeCounts } from '@/hooks/useBadgeCounts';
 import { LayoutDashboard, ShoppingBag, Calendar, History, User } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 export function CustomerLayout() {
   const { user } = useAuthStore();
-  const [counts, setCounts] = useState({ bookings: 0, rentals: 0 });
-
-  useEffect(() => {
-    async function loadCounts() {
-      if (user?.id) {
-        const [b, r] = await Promise.all([
-          bookingRepository.getByCustomerId(user.id),
-          rentalRepository.getByCustomerId(user.id),
-        ]);
-        setCounts({
-          bookings: b.filter((item) => item.status === 'pending' || item.status === 'approved').length,
-          rentals: r.filter((item) => item.status === 'ongoing' || item.status === 'overdue').length,
-        });
-      }
-    }
-    loadCounts();
-  }, [user]);
+  const counts = useCustomerBadgeCounts(user?.id);
 
   const navItems = [
     { to: ROUTES.CUSTOMER_PORTAL, label: 'Dashboard', icon: LayoutDashboard },

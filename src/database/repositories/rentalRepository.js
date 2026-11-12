@@ -1,6 +1,7 @@
 import { db } from '../local/db';
 import { RENTAL_STATUS, UNIT_STATUS, BOOKING_STATUS } from '@/constants/statuses';
 import { resolveCustomerIds } from '@/utils/resolveCustomerIds';
+import { notifyDbChange } from '@/utils/dbEvents';
 
 export const rentalRepository = {
   async getAll(businessId) {
@@ -28,7 +29,7 @@ export const rentalRepository = {
   },
 
   async processCheckout({ rentalOrder, unitId, inspection, bookingId, customerId }) {
-    return await db.transaction('rw', [db.rental_orders, db.equipment_units, db.bookings, db.rental_inspections, db.customers], async () => {
+    const res = await db.transaction('rw', [db.rental_orders, db.equipment_units, db.bookings, db.rental_inspections, db.customers], async () => {
       await db.rental_orders.add(rentalOrder);
       await db.equipment_units.update(unitId, { status: UNIT_STATUS.RENTED });
       if (bookingId) {
@@ -45,10 +46,12 @@ export const rentalRepository = {
       }
       return rentalOrder;
     });
+    notifyDbChange();
+    return res;
   },
 
   async processReturn({ rentalId, unitId, returnData, inspection, nextUnitStatus = UNIT_STATUS.AVAILABLE }) {
-    return await db.transaction('rw', [db.rental_orders, db.equipment_units, db.rental_inspections], async () => {
+    const res = await db.transaction('rw', [db.rental_orders, db.equipment_units, db.rental_inspections], async () => {
       await db.rental_orders.update(rentalId, {
         status: RENTAL_STATUS.COMPLETED,
         actual_return_date: returnData.actualReturnDate,
@@ -67,6 +70,8 @@ export const rentalRepository = {
       }
       return await db.rental_orders.get(rentalId);
     });
+    notifyDbChange();
+    return res;
   },
 
   async recordPayment(rentalId, paymentAmount) {
@@ -74,6 +79,7 @@ export const rentalRepository = {
     if (!order) return null;
     const newPaid = (order.paid_amount || 0) + paymentAmount;
     await db.rental_orders.update(rentalId, { paid_amount: newPaid, updatedAt: new Date().toISOString() });
+    notifyDbChange();
     return await db.rental_orders.get(rentalId);
   },
 };

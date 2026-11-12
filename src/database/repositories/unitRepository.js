@@ -1,5 +1,6 @@
 import { db } from '../local/db';
 import { UNIT_STATUS } from '@/constants/statuses';
+import { notifyDbChange } from '@/utils/dbEvents';
 
 export const unitRepository = {
   async getByEquipmentId(equipmentId) {
@@ -22,6 +23,7 @@ export const unitRepository = {
     // update total stock in equipment
     const count = await db.equipment_units.where('equipment_id').equals(unit.equipment_id).count();
     await db.equipment.update(unit.equipment_id, { total_stock: count });
+    notifyDbChange();
     return unit;
   },
 
@@ -29,6 +31,7 @@ export const unitRepository = {
     const updateData = { status };
     if (notes) updateData.condition = notes;
     await db.equipment_units.update(id, updateData);
+    notifyDbChange();
     return await this.getById(id);
   },
 
@@ -39,6 +42,7 @@ export const unitRepository = {
       const count = await db.equipment_units.where('equipment_id').equals(unit.equipment_id).count();
       await db.equipment.update(unit.equipment_id, { total_stock: count });
     }
+    notifyDbChange();
     return true;
   },
 };
