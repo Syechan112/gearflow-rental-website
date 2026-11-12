@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { PageContainer } from '@/components/common/PageContainer';
+import { Select } from '@/components/ui/Select';
 import { equipmentRepository } from '@/database/repositories/equipmentRepository';
 import { EquipmentCard } from '../components/EquipmentCard';
 import { EquipmentDetailModal } from '../components/EquipmentDetailModal';
@@ -38,6 +39,11 @@ export function CatalogPage() {
     return equipmentList.filter((item) => item.category_id === catId).length;
   };
 
+  const categoryOptions = useMemo(() => [
+    { value: 'all', label: `Semua Kategori (${equipmentList.length})` },
+    ...categories.map((c) => ({ value: c.id, label: `${c.name} (${getCategoryCount(c.id)})` })),
+  ], [categories, equipmentList]);
+
   const filtered = selectedCategory === 'all'
     ? equipmentList
     : equipmentList.filter((item) => item.category_id === selectedCategory);
@@ -55,12 +61,22 @@ export function CatalogPage() {
         </p>
       </div>
 
-      {/* Category Pills - Optimized for Mobile Touch Swiping & Desktop Centering */}
-      <div className="flex items-center justify-start sm:justify-center gap-2 overflow-x-auto pb-4 pt-1 px-4 -mx-4 sm:mx-0 sm:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      {/* Mobile View: Anti-Native Floating Dropdown */}
+      <div className="sm:hidden mb-4">
+        <Select
+          options={categoryOptions}
+          value={selectedCategory}
+          onChange={(val) => setSelectedCategory(val)}
+          placeholder="Filter Kategori Peralatan..."
+        />
+      </div>
+
+      {/* Desktop & Tablet View: Horizontal Tactile Pills */}
+      <div className="hidden sm:flex items-center justify-center gap-2 overflow-x-auto pb-6 pt-1">
         <button
           onClick={() => setSelectedCategory('all')}
           className={cn(
-            'flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer border',
+            'flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer border',
             selectedCategory === 'all'
               ? 'bg-primary text-white border-primary shadow-sm ring-2 ring-primary/10'
               : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300'
@@ -82,7 +98,7 @@ export function CatalogPage() {
               key={cat.id}
               onClick={() => setSelectedCategory(cat.id)}
               className={cn(
-                'flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer border',
+                'flex-shrink-0 whitespace-nowrap flex items-center gap-2 px-4 py-2 rounded-full text-xs font-medium transition-all cursor-pointer border',
                 isSelected
                   ? 'bg-primary text-white border-primary shadow-sm ring-2 ring-primary/10'
                   : 'bg-white text-neutral-700 border-neutral-200 hover:bg-neutral-50 hover:border-neutral-300'
