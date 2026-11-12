@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { formatCurrency } from '@/utils/formatCurrency';
 import { Badge } from '@/components/ui/Badge';
 import { Button } from '@/components/ui/Button';
-import { ShoppingBag, Eye } from 'lucide-react';
+import { ShoppingBag, Eye, Image as ImageIcon } from 'lucide-react';
+import { cn } from '@/utils/cn';
 
 export function EquipmentCard({ item, onSelectForBooking, onOpenDetail }) {
+  const [isLoaded, setIsLoaded] = useState(false);
+
   return (
     <div className="group bg-white border border-neutral-200 rounded-card overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col justify-between">
       <div>
@@ -12,14 +15,29 @@ export function EquipmentCard({ item, onSelectForBooking, onOpenDetail }) {
           onClick={() => onOpenDetail(item)}
           className="relative aspect-square overflow-hidden bg-neutral-100 cursor-pointer"
         >
+          {/* Skeleton placeholder while image lazy loads */}
+          {!isLoaded && (
+            <div className="absolute inset-0 bg-neutral-200 animate-pulse flex items-center justify-center">
+              <ImageIcon className="w-8 h-8 text-neutral-300" />
+            </div>
+          )}
+
           <img
             src={item.image_url}
             alt={item.name}
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            loading="lazy"
+            decoding="async"
+            onLoad={() => setIsLoaded(true)}
+            className={cn(
+              'w-full h-full object-cover group-hover:scale-105 transition-all duration-300',
+              isLoaded ? 'opacity-100' : 'opacity-0'
+            )}
           />
+
           <div className="absolute top-3 left-3">
             <Badge variant="success" dot>Tersedia</Badge>
           </div>
+
           <div className="absolute inset-0 bg-neutral-900/10 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
             <span className="bg-white/90 backdrop-blur text-neutral-900 text-xs font-semibold px-3 py-1.5 rounded-full shadow-sm flex items-center gap-1.5">
               <Eye className="w-3.5 h-3.5" /> Lihat Detail
