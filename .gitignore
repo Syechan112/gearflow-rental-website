@@ -9,8 +9,12 @@ dist-ssr
 build
 *.local
 
-# Documentation & Temp User Guides
+# Documentation, Specs & Project Guides
 HOW-TO-USE.md
+PRD.md
+DESIGN.md
+AGENTS.md
+TODOS.md
 
 # Logs & Diagnostics
 npm-debug.log*
