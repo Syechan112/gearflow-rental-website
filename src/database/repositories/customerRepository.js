@@ -1,4 +1,5 @@
 import { db } from '../local/db';
+import { resolveCustomerIds } from '@/utils/resolveCustomerIds';
 
 export const customerRepository = {
   async getAll(businessId) {
@@ -27,9 +28,10 @@ export const customerRepository = {
   },
 
   async getHistory(customerId) {
+    const ids = await resolveCustomerIds(customerId);
     const [bookings, rentals] = await Promise.all([
-      db.bookings.where('customer_id').equals(customerId).toArray(),
-      db.rental_orders.where('customer_id').equals(customerId).toArray(),
+      db.bookings.where('customer_id').anyOf(ids).toArray(),
+      db.rental_orders.where('customer_id').anyOf(ids).toArray(),
     ]);
     return { bookings, rentals };
   },

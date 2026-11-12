@@ -6,6 +6,7 @@ import { cn } from '@/utils/cn';
 const TABS = [
   { id: 'all', label: 'Semua' },
   { id: 'ongoing', label: 'Sedang Berjalan' },
+  { id: 'booking', label: 'Booking Baru' },
   { id: 'completed', label: 'Selesai' },
   { id: 'overdue', label: 'Terlambat' },
 ];

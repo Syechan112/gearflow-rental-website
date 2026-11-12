@@ -89,7 +89,7 @@ export const router = createBrowserRouter([
         element: <CustomerLayout />,
         children: [
           { path: ROUTES.CUSTOMER_PORTAL, element: <CustomerDashboardPage /> },
-          { path: ROUTES.CUSTOMER_BOOKINGS, element: <CustomerDashboardPage /> },
+          { path: ROUTES.CUSTOMER_BOOKINGS, element: <CustomerRentalsPage /> },
           { path: ROUTES.CUSTOMER_RENTALS, element: <CustomerRentalsPage /> },
           { path: ROUTES.CUSTOMER_PROFILE, element: <CustomerProfilePage /> },
         ],

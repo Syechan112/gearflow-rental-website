@@ -1,5 +1,6 @@
 import { db } from '../local/db';
 import { RENTAL_STATUS, UNIT_STATUS, BOOKING_STATUS } from '@/constants/statuses';
+import { resolveCustomerIds } from '@/utils/resolveCustomerIds';
 
 export const rentalRepository = {
   async getAll(businessId) {
@@ -14,7 +15,8 @@ export const rentalRepository = {
   },
 
   async getByCustomerId(customerId) {
-    return await db.rental_orders.where('customer_id').equals(customerId).toArray();
+    const ids = await resolveCustomerIds(customerId);
+    return await db.rental_orders.where('customer_id').anyOf(ids).toArray();
   },
 
   async getActiveRentals(businessId) {

@@ -1,5 +1,6 @@
 import { db } from '../local/db';
 import { BOOKING_STATUS, UNIT_STATUS } from '@/constants/statuses';
+import { resolveCustomerIds } from '@/utils/resolveCustomerIds';
 
 export const bookingRepository = {
   async getAll(businessId) {
@@ -14,7 +15,8 @@ export const bookingRepository = {
   },
 
   async getByCustomerId(customerId) {
-    return await db.bookings.where('customer_id').equals(customerId).toArray();
+    const ids = await resolveCustomerIds(customerId);
+    return await db.bookings.where('customer_id').anyOf(ids).toArray();
   },
 
   async create(booking) {
@@ -35,7 +37,7 @@ export const bookingRepository = {
       .equals(equipmentId)
       .filter((u) => u.status !== UNIT_STATUS.MAINTENANCE && u.status !== UNIT_STATUS.DAMAGED)
       .toArray();
-
+    
     const activeBookings = await db.bookings
       .where('equipment_id')
       .equals(equipmentId)
