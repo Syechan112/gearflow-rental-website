@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { PageHeader } from '@/components/common/PageHeader';
 import { PageContainer } from '@/components/common/PageContainer';
 import { StatCard } from '@/components/common/StatCard';
+import { EquipmentUtilization } from '../components/EquipmentUtilization';
+import { OperationalTrafficChart } from '../components/OperationalTrafficChart';
 import { dashboardRepository } from '@/database/repositories/dashboardRepository';
 import { unitRepository } from '@/database/repositories/unitRepository';
 import { Button } from '@/components/ui/Button';
@@ -13,19 +15,23 @@ import { UNIT_STATUS } from '@/constants/statuses';
 
 export function StaffDashboardPage() {
   const [metrics, setMetrics] = useState(null);
-  const [maintUnits, setMaintUnits] = useState([]);
+  const [units, setUnits] = useState([]);
 
   useEffect(() => {
     async function loadData() {
-      const [m, units] = await Promise.all([
+      const [m, u] = await Promise.all([
         dashboardRepository.getStaffMetrics(),
         unitRepository.getAll(),
       ]);
       setMetrics(m);
-      setMaintUnits(units.filter((u) => u.status === UNIT_STATUS.MAINTENANCE));
+      setUnits(u);
     }
     loadData();
   }, []);
+
+  const maintUnits = useMemo(() => units.filter((u) => u.status === UNIT_STATUS.MAINTENANCE), [units]);
+  const availableUnits = useMemo(() => units.filter((u) => u.status === UNIT_STATUS.AVAILABLE), [units]);
+  const rentedUnits = useMemo(() => units.filter((u) => u.status === UNIT_STATUS.RENTED), [units]);
 
   return (
     <PageContainer>
@@ -44,6 +50,7 @@ export function StaffDashboardPage() {
         }
       />
 
+      {/* Top Stat Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         <StatCard title="Jadwal Check-out" value={metrics ? `${metrics.todayCheckouts} Unit` : '...'} subtitle="Booking disetujui" icon={ArrowUpRight} badgeText="Hari Ini" badgeType="success" />
         <StatCard title="Target Pengembalian" value={metrics ? `${metrics.todayReturns} Order` : '...'} subtitle="Jadwal kembali ke gudang" icon={ArrowDownLeft} badgeText="Aktif" badgeType="warning" />
@@ -51,6 +58,22 @@ export function StaffDashboardPage() {
         <StatCard title="Rental Berlangsung" value={metrics ? `${metrics.activeRentals} Order` : '...'} subtitle="Sedang disewa pelanggan" icon={Clock} badgeText="Ongoing" badgeType="neutral" />
       </div>
 
+      {/* Operational Charts & Graphs Grid */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        <div className="lg:col-span-2">
+          <OperationalTrafficChart />
+        </div>
+        <div className="lg:col-span-1">
+          <EquipmentUtilization
+            available={availableUnits.length}
+            rented={rentedUnits.length}
+            maintenance={maintUnits.length}
+            total={units.length}
+          />
+        </div>
+      </div>
+
+      {/* Operational Task Lists */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white border border-neutral-200 rounded-card p-6 shadow-sm">
           <h3 className="text-sm font-semibold text-neutral-900 mb-2 flex items-center gap-2">

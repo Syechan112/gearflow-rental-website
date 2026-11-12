@@ -4,18 +4,18 @@ import { ROUTES } from '@/constants/routes';
 import { LayoutDashboard, ShoppingBag, Calendar, History, User } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
-const BOTTOM_NAV_ITEMS = [
-  { to: ROUTES.CUSTOMER_PORTAL, label: 'Dashboard', icon: LayoutDashboard },
-  { to: ROUTES.CATALOG, label: 'Katalog', icon: ShoppingBag },
-  { to: ROUTES.CUSTOMER_BOOKINGS, label: 'Booking', icon: Calendar },
-  { to: ROUTES.CUSTOMER_RENTALS, label: 'Rental', icon: History },
-  { to: ROUTES.CUSTOMER_PROFILE, label: 'Profil', icon: User },
-];
+export function CustomerBottomNav({ counts = {} }) {
+  const items = [
+    { to: ROUTES.CUSTOMER_PORTAL, label: 'Dashboard', icon: LayoutDashboard },
+    { to: ROUTES.CATALOG, label: 'Katalog', icon: ShoppingBag },
+    { to: ROUTES.CUSTOMER_BOOKINGS, label: 'Booking', icon: Calendar, badge: counts.bookings },
+    { to: ROUTES.CUSTOMER_RENTALS, label: 'Rental', icon: History, badge: counts.rentals },
+    { to: ROUTES.CUSTOMER_PROFILE, label: 'Profil', icon: User },
+  ];
 
-export function CustomerBottomNav() {
   return (
     <nav className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur border-t border-neutral-200 lg:hidden px-4 py-2 flex items-center justify-around shadow-lg">
-      {BOTTOM_NAV_ITEMS.map((item) => {
+      {items.map((item) => {
         const Icon = item.icon;
         return (
           <NavLink
@@ -28,7 +28,14 @@ export function CustomerBottomNav() {
               )
             }
           >
-            <Icon className="w-5 h-5" />
+            <div className="relative">
+              <Icon className="w-5 h-5" />
+              {item.badge > 0 && (
+                <span className="absolute -top-1 -right-2 px-1 min-w-[14px] h-[14px] text-[9px] font-bold rounded-full bg-primary text-white flex items-center justify-center">
+                  {item.badge}
+                </span>
+              )}
+            </div>
             <span>{item.label}</span>
           </NavLink>
         );

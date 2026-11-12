@@ -42,8 +42,17 @@ export function Sidebar({ items = [], isOpen = true, onClose }) {
               >
                 <Icon className="w-4 h-4 shrink-0" />
                 <span>{item.label}</span>
-                {item.badge && (
-                  <span className="ml-auto px-1.5 py-0.5 text-[10px] rounded-full bg-neutral-200 text-neutral-800">
+                {item.badge !== undefined && item.badge !== null && item.badge > 0 && (
+                  <span
+                    className={cn(
+                      'ml-auto px-1.5 py-0.5 text-[10px] font-bold rounded-full transition-colors',
+                      item.badgeVariant === 'warning'
+                        ? 'bg-amber-100 text-amber-700'
+                        : item.badgeVariant === 'danger'
+                        ? 'bg-red-100 text-red-700'
+                        : 'bg-primary-light text-primary'
+                    )}
+                  >
                     {item.badge}
                   </span>
                 )}
