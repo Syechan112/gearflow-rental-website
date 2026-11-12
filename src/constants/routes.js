@@ -9,6 +9,9 @@ export const ROUTES = {
   OWNER_BOOKINGS: '/owner/bookings',
   OWNER_RENTALS: '/owner/rentals',
   OWNER_CUSTOMERS: '/owner/customers',
+  OWNER_MAINTENANCE: '/owner/maintenance',
+  OWNER_BUNDLES: '/owner/bundles',
+  OWNER_STAFF: '/owner/staff',
   OWNER_REPORTS: '/owner/reports',
   OWNER_SETTINGS: '/owner/settings',
 
@@ -19,6 +22,7 @@ export const ROUTES = {
   STAFF_RENTALS: '/staff/rentals',
   STAFF_CHECKOUT: '/staff/checkout',
   STAFF_RETURNS: '/staff/returns',
+  STAFF_MAINTENANCE: '/staff/maintenance',
 
   // Customer routes
   CUSTOMER_PORTAL: '/customer/portal',

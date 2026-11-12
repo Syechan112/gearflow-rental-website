@@ -10,6 +10,7 @@ import {
   Receipt,
   ArrowUpRight,
   ArrowDownLeft,
+  Wrench,
 } from 'lucide-react';
 
 const STAFF_NAV_ITEMS = [
@@ -19,6 +20,7 @@ const STAFF_NAV_ITEMS = [
   { to: ROUTES.STAFF_RENTALS, label: 'Active Rentals', icon: Receipt },
   { to: ROUTES.STAFF_CHECKOUT, label: 'Check-out Barang', icon: ArrowUpRight },
   { to: ROUTES.STAFF_RETURNS, label: 'Check-in & Inspeksi', icon: ArrowDownLeft },
+  { to: ROUTES.STAFF_MAINTENANCE, label: 'Servis & Maintenance', icon: Wrench },
 ];
 
 export function StaffLayout() {

@@ -1,10 +1,13 @@
-import { db } from '../local/db';
-import { UNIT_STATUS } from '@/constants/statuses';
+import { db } from "../local/db";
+import { UNIT_STATUS } from "@/constants/statuses";
 
 export const equipmentRepository = {
   async getAll(businessId) {
     if (businessId) {
-      return await db.equipment.where('business_id').equals(businessId).toArray();
+      return await db.equipment
+        .where("business_id")
+        .equals(businessId)
+        .toArray();
     }
     return await db.equipment.toArray();
   },
@@ -14,19 +17,28 @@ export const equipmentRepository = {
   },
 
   async getUnitsByEquipmentId(equipmentId) {
-    return await db.equipment_units.where('equipment_id').equals(equipmentId).toArray();
+    return await db.equipment_units
+      .where("equipment_id")
+      .equals(equipmentId)
+      .toArray();
   },
 
   async getAllUnits(businessId) {
     if (businessId) {
-      return await db.equipment_units.where('business_id').equals(businessId).toArray();
+      return await db.equipment_units
+        .where("business_id")
+        .equals(businessId)
+        .toArray();
     }
     return await db.equipment_units.toArray();
   },
 
   async getCategories(businessId) {
     if (businessId) {
-      return await db.categories.where('business_id').equals(businessId).toArray();
+      return await db.categories
+        .where("business_id")
+        .equals(businessId)
+        .toArray();
     }
     return await db.categories.toArray();
   },
@@ -42,7 +54,7 @@ export const equipmentRepository = {
   },
 
   async delete(id) {
-    await db.equipment_units.where('equipment_id').equals(id).delete();
+    await db.equipment_units.where("equipment_id").equals(id).delete();
     return await db.equipment.delete(id);
   },
 };

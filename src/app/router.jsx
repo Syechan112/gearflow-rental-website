@@ -17,6 +17,9 @@ import { InventoryPage } from '@/features/inventory/pages/InventoryPage';
 import { BookingsPage } from '@/features/bookings/pages/BookingsPage';
 import { RentalsPage } from '@/features/rental-orders/pages/RentalsPage';
 import { CustomersPage } from '@/features/customers/pages/CustomersPage';
+import { MaintenancePage } from '@/features/maintenance/pages/MaintenancePage';
+import { BundlesPage } from '@/features/bundles/pages/BundlesPage';
+import { StaffManagementPage } from '@/features/staff/pages/StaffManagementPage';
 import { ReportsPage } from '@/features/reports/pages/ReportsPage';
 import { SettingsPage } from '@/features/settings/pages/SettingsPage';
 
@@ -36,16 +39,10 @@ function RootRedirect() {
 export const router = createBrowserRouter([
   { path: ROUTES.HOME, element: <RootRedirect /> },
   { path: ROUTES.LOGIN, element: <LoginPage /> },
-  
-  // Public catalog access
   {
     element: <CustomerLayout />,
-    children: [
-      { path: ROUTES.CATALOG, element: <CatalogPage /> },
-    ],
+    children: [{ path: ROUTES.CATALOG, element: <CatalogPage /> }],
   },
-
-  // Owner Routes
   {
     element: <ProtectedRoute allowedRoles={[ROLES.OWNER]} />,
     children: [
@@ -57,14 +54,15 @@ export const router = createBrowserRouter([
           { path: ROUTES.OWNER_BOOKINGS, element: <BookingsPage /> },
           { path: ROUTES.OWNER_RENTALS, element: <RentalsPage /> },
           { path: ROUTES.OWNER_CUSTOMERS, element: <CustomersPage /> },
+          { path: ROUTES.OWNER_MAINTENANCE, element: <MaintenancePage /> },
+          { path: ROUTES.OWNER_BUNDLES, element: <BundlesPage /> },
+          { path: ROUTES.OWNER_STAFF, element: <StaffManagementPage /> },
           { path: ROUTES.OWNER_REPORTS, element: <ReportsPage /> },
           { path: ROUTES.OWNER_SETTINGS, element: <SettingsPage /> },
         ],
       },
     ],
   },
-
-  // Staff Routes
   {
     element: <ProtectedRoute allowedRoles={[ROLES.STAFF, ROLES.OWNER]} />,
     children: [
@@ -75,14 +73,13 @@ export const router = createBrowserRouter([
           { path: ROUTES.STAFF_INVENTORY, element: <InventoryPage /> },
           { path: ROUTES.STAFF_BOOKINGS, element: <BookingsPage /> },
           { path: ROUTES.STAFF_RENTALS, element: <RentalsPage /> },
-          { path: ROUTES.STAFF_CHECKOUT, element: <BookingsPage /> },
+          { path: ROUTES.STAFF_CHECKOUT, element: <RentalsPage /> },
           { path: ROUTES.STAFF_RETURNS, element: <RentalsPage /> },
+          { path: ROUTES.STAFF_MAINTENANCE, element: <MaintenancePage /> },
         ],
       },
     ],
   },
-
-  // Customer Routes
   {
     element: <ProtectedRoute allowedRoles={[ROLES.CUSTOMER, ROLES.STAFF, ROLES.OWNER]} />,
     children: [
@@ -97,6 +94,5 @@ export const router = createBrowserRouter([
       },
     ],
   },
-
   { path: '*', element: <Navigate to={ROUTES.HOME} replace /> },
 ]);

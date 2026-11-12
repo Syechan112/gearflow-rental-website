@@ -9,6 +9,9 @@ import {
   CalendarDays,
   Receipt,
   Users,
+  Wrench,
+  Layers,
+  UserCheck,
   BarChart3,
   Settings,
 } from 'lucide-react';
@@ -19,8 +22,11 @@ const OWNER_NAV_ITEMS = [
   { to: ROUTES.OWNER_BOOKINGS, label: 'Pemesanan (Bookings)', icon: CalendarDays },
   { to: ROUTES.OWNER_RENTALS, label: 'Transaksi Rental', icon: Receipt },
   { to: ROUTES.OWNER_CUSTOMERS, label: 'Data Pelanggan', icon: Users },
+  { to: ROUTES.OWNER_MAINTENANCE, label: 'Perawatan Unit', icon: Wrench },
+  { to: ROUTES.OWNER_BUNDLES, label: 'Paket Bundling', icon: Layers },
+  { to: ROUTES.OWNER_STAFF, label: 'Kelola Staf & Izin', icon: UserCheck },
   { to: ROUTES.OWNER_REPORTS, label: 'Laporan & Analytics', icon: BarChart3 },
-  { to: ROUTES.OWNER_SETTINGS, label: 'Pengaturan Bisnis', icon: Settings },
+  { to: ROUTES.OWNER_SETTINGS, label: 'Pengaturan & Audit', icon: Settings },
 ];
 
 export function OwnerLayout() {
