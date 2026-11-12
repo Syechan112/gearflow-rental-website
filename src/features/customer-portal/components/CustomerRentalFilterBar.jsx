@@ -3,19 +3,25 @@ import { Input } from '@/components/ui/Input';
 import { Search } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
-const TABS = [
+const DEFAULT_TABS = [
   { id: 'all', label: 'Semua' },
   { id: 'ongoing', label: 'Sedang Berjalan' },
-  { id: 'booking', label: 'Booking Baru' },
   { id: 'completed', label: 'Selesai' },
   { id: 'overdue', label: 'Terlambat' },
 ];
 
-export function CustomerRentalFilterBar({ activeTab, onTabChange, searchQuery, onSearchChange }) {
+export function CustomerRentalFilterBar({
+  tabs = DEFAULT_TABS,
+  activeTab,
+  onTabChange,
+  searchQuery,
+  onSearchChange,
+  placeholder = 'Cari ID transaksi atau alat...',
+}) {
   return (
     <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 mb-6">
       <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
-        {TABS.map((tab) => (
+        {tabs.map((tab) => (
           <button
             key={tab.id}
             onClick={() => onTabChange(tab.id)}
@@ -32,7 +38,7 @@ export function CustomerRentalFilterBar({ activeTab, onTabChange, searchQuery, o
       </div>
       <div className="w-full sm:w-64">
         <Input
-          placeholder="Cari ID rental atau alat..."
+          placeholder={placeholder}
           value={searchQuery}
           onChange={(e) => onSearchChange(e.target.value)}
           icon={Search}

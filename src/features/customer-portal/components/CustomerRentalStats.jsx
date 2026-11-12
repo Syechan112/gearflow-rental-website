@@ -1,5 +1,5 @@
 import React from 'react';
-import { History, Clock, CheckCircle2, Calendar } from 'lucide-react';
+import { History, Clock, CheckCircle2, AlertTriangle } from 'lucide-react';
 
 export function CustomerRentalStats({ stats }) {
   return (
@@ -11,16 +11,6 @@ export function CustomerRentalStats({ stats }) {
         <div>
           <p className="text-[11px] sm:text-xs text-neutral-500">Total Transaksi</p>
           <p className="text-lg sm:text-xl font-bold text-neutral-900">{stats.total}</p>
-        </div>
-      </div>
-
-      <div className="bg-white border border-neutral-200 rounded-card p-3.5 sm:p-4 flex items-center gap-3 shadow-sm">
-        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-blue-500/10 flex items-center justify-center text-blue-600 flex-shrink-0">
-          <Calendar className="w-4 h-4 sm:w-5 sm:h-5" />
-        </div>
-        <div>
-          <p className="text-[11px] sm:text-xs text-neutral-500">Booking Baru</p>
-          <p className="text-lg sm:text-xl font-bold text-blue-600">{stats.bookings}</p>
         </div>
       </div>
 
@@ -39,8 +29,18 @@ export function CustomerRentalStats({ stats }) {
           <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
         </div>
         <div>
-          <p className="text-[11px] sm:text-xs text-neutral-500">Selesai</p>
+          <p className="text-[11px] sm:text-xs text-neutral-500">Selesai Dikembalikan</p>
           <p className="text-lg sm:text-xl font-bold text-emerald-600">{stats.completed}</p>
+        </div>
+      </div>
+
+      <div className="bg-white border border-neutral-200 rounded-card p-3.5 sm:p-4 flex items-center gap-3 shadow-sm">
+        <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-600 flex-shrink-0">
+          <AlertTriangle className="w-4 h-4 sm:w-5 sm:h-5" />
+        </div>
+        <div>
+          <p className="text-[11px] sm:text-xs text-neutral-500">Terlambat</p>
+          <p className="text-lg sm:text-xl font-bold text-red-600">{stats.overdue || 0}</p>
         </div>
       </div>
     </div>

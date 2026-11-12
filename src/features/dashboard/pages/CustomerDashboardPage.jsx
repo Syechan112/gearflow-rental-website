@@ -61,9 +61,14 @@ export function CustomerDashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="bg-white border border-neutral-200 rounded-card p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-neutral-900 mb-3 flex items-center gap-2">
-            <Calendar className="w-4 h-4 text-primary" /> Permintaan Booking Saya ({bookings.length})
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+              <Calendar className="w-4 h-4 text-primary" /> Permintaan Booking Saya ({bookings.length})
+            </h3>
+            <Link to={ROUTES.CUSTOMER_BOOKINGS} className="text-primary hover:underline text-xs font-medium">
+              Lihat Semua
+            </Link>
+          </div>
           {bookings.length === 0 ? (
             <p className="text-xs text-neutral-400 py-6 text-center">Belum ada booking aktif saat ini.</p>
           ) : (
