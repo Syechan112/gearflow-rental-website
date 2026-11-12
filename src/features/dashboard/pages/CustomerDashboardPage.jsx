@@ -91,9 +91,14 @@ export function CustomerDashboardPage() {
         </div>
 
         <div className="bg-white border border-neutral-200 rounded-card p-6 shadow-sm">
-          <h3 className="text-sm font-bold text-neutral-900 mb-3 flex items-center gap-2">
-            <ShoppingBag className="w-4 h-4 text-primary" /> Transaksi & Riwayat Rental ({rentals.length})
-          </h3>
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="text-sm font-bold text-neutral-900 flex items-center gap-2">
+              <ShoppingBag className="w-4 h-4 text-primary" /> Transaksi & Riwayat Rental ({rentals.length})
+            </h3>
+            <Link to={ROUTES.CUSTOMER_RENTALS} className="text-primary hover:underline text-xs font-medium">
+              Lihat Semua
+            </Link>
+          </div>
           {rentals.length === 0 ? (
             <p className="text-xs text-neutral-400 py-6 text-center">Tidak ada unit yang sedang Anda sewa saat ini.</p>
           ) : (

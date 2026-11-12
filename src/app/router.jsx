@@ -12,6 +12,7 @@ import { ProtectedRoute } from '@/components/layout/ProtectedRoute';
 import { OwnerDashboardPage } from '@/features/dashboard/pages/OwnerDashboardPage';
 import { StaffDashboardPage } from '@/features/dashboard/pages/StaffDashboardPage';
 import { CustomerDashboardPage } from '@/features/dashboard/pages/CustomerDashboardPage';
+import { CustomerRentalsPage } from '@/features/customer-portal/pages/CustomerRentalsPage';
 import { CustomerProfilePage } from '@/features/customer-portal/pages/CustomerProfilePage';
 import { CatalogPage } from '@/features/customer-portal/pages/CatalogPage';
 import { InventoryPage } from '@/features/inventory/pages/InventoryPage';
@@ -89,7 +90,7 @@ export const router = createBrowserRouter([
         children: [
           { path: ROUTES.CUSTOMER_PORTAL, element: <CustomerDashboardPage /> },
           { path: ROUTES.CUSTOMER_BOOKINGS, element: <CustomerDashboardPage /> },
-          { path: ROUTES.CUSTOMER_RENTALS, element: <CustomerDashboardPage /> },
+          { path: ROUTES.CUSTOMER_RENTALS, element: <CustomerRentalsPage /> },
           { path: ROUTES.CUSTOMER_PROFILE, element: <CustomerProfilePage /> },
         ],
       },
