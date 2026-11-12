@@ -29,7 +29,10 @@ export function Select({
   const selectedOption = options.find((opt) => opt.value === value);
 
   return (
-    <div ref={containerRef} className={cn('relative flex flex-col gap-1.5 w-full', wrapperClassName)}>
+    <div
+      ref={containerRef}
+      className={cn('relative flex flex-col gap-1.5 w-full', isOpen ? 'z-50' : 'z-auto', wrapperClassName)}
+    >
       {label && (
         <label className="text-xs font-semibold text-neutral-700 tracking-wide">{label}</label>
       )}

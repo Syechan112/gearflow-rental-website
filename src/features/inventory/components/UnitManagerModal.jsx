@@ -96,9 +96,12 @@ export function UnitManagerModal({ equipment, isOpen, onClose, onUpdated }) {
           </div>
         )}
 
-        <div className="space-y-2 max-h-72 overflow-y-auto">
+        <div className="space-y-2.5 pb-24">
           {units.map((unit) => (
-            <div key={unit.id} className="p-3 bg-white border border-neutral-200 rounded-btn flex items-center justify-between gap-3 text-xs">
+            <div
+              key={unit.id}
+              className="p-3 bg-white border border-neutral-200 rounded-btn flex items-center justify-between gap-3 text-xs shadow-sm hover:border-neutral-300 transition-colors"
+            >
               <div className="flex-1">
                 <p className="font-bold text-neutral-900">{unit.serial_number}</p>
                 <p className="text-[11px] text-neutral-500">Kondisi: {unit.condition || 'Normal'}</p>
