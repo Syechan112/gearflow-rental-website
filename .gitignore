@@ -1,13 +1,59 @@
+# Dependencies
 node_modules
+.pnp
+.pnp.js
+
+# Production & Build outputs
 dist
 dist-ssr
+build
 *.local
+
+# Documentation & Temp User Guides
+HOW-TO-USE.md
+
+# Logs & Diagnostics
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.log
+
+# Environment variables & secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Editor & IDE configurations
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
+.idea/
 *.suo
 *.ntvs*
 *.njsproj
 *.sln
 *.sw?
+*.swo
+*.swn
+*.swp
+
+# OS generated files & caches
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# Caches & temporary files
+.eslintcache
+.stylelintcache
+.turbo
+.cache/
+*.tmp
+*.temp
