@@ -8,7 +8,7 @@ import { unitRepository } from '@/database/repositories/unitRepository';
 import { UNIT_STATUS } from '@/constants/statuses';
 import { generateId } from '@/utils/generateId';
 import { toast } from 'sonner';
-import { Plus, Trash2, Wrench } from 'lucide-react';
+import { Plus, Trash2, RotateCw } from 'lucide-react';
 
 const STATUS_OPTIONS = [
   { value: UNIT_STATUS.AVAILABLE, label: 'Available (Siap Sewa)' },
@@ -40,17 +40,24 @@ export function UnitManagerModal({ equipment, isOpen, onClose, onUpdated }) {
     onUpdated?.();
   };
 
+  const handleToggleAdd = () => {
+    if (!isAdding) {
+      setNewSerial(generateId());
+    }
+    setIsAdding(!isAdding);
+  };
+
   const handleAddUnit = async () => {
-    if (!newSerial.trim()) return toast.error('Nomor seri wajib diisi');
+    const sn = newSerial.trim() || generateId();
     await unitRepository.create({
-      id: generateId('unt'),
+      id: generateId(),
       equipment_id: equipment.id,
       business_id: equipment.business_id,
-      serial_number: newSerial.trim(),
+      serial_number: sn,
       status: UNIT_STATUS.AVAILABLE,
       condition: newCondition || 'Sangat Baik',
     });
-    toast.success(`Unit ${newSerial} berhasil didaftarkan!`);
+    toast.success(`Unit ${sn} berhasil didaftarkan!`);
     setNewSerial('');
     setIsAdding(false);
     loadUnits();
@@ -77,16 +84,19 @@ export function UnitManagerModal({ equipment, isOpen, onClose, onUpdated }) {
       <div className="space-y-4">
         <div className="flex items-center justify-between pb-3 border-b border-neutral-100">
           <span className="text-xs font-semibold text-neutral-700">Total Terdaftar: {units.length} Unit</span>
-          <Button size="sm" variant="secondary" icon={Plus} onClick={() => setIsAdding(!isAdding)}>
+          <Button size="sm" variant="secondary" icon={Plus} onClick={handleToggleAdd}>
             {isAdding ? 'Tutup Form' : 'Tambah Unit Fisik'}
           </Button>
         </div>
 
         {isAdding && (
           <div className="p-3 bg-neutral-50 rounded-btn border border-neutral-200 space-y-3">
-            <h4 className="text-xs font-bold text-neutral-900">Registrasi Unit Baru</h4>
-            <div className="grid grid-cols-2 gap-2">
-              <Input placeholder="Nomor Seri (SN)" value={newSerial} onChange={(e) => setNewSerial(e.target.value)} />
+            <h4 className="text-xs font-bold text-neutral-900">Registrasi Unit Baru (ID Otomatis 16 Angka)</h4>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              <div className="flex gap-1.5 items-center">
+                <Input placeholder="Nomor Seri (16 Angka)" value={newSerial} onChange={(e) => setNewSerial(e.target.value)} className="font-mono text-xs flex-1" />
+                <Button type="button" size="sm" variant="outline" icon={RotateCw} onClick={() => setNewSerial(generateId())} title="Generate Ulang 16 Angka" />
+              </div>
               <Input placeholder="Kondisi Fisik" value={newCondition} onChange={(e) => setNewCondition(e.target.value)} />
             </div>
             <div className="flex justify-end gap-2">
@@ -98,20 +108,13 @@ export function UnitManagerModal({ equipment, isOpen, onClose, onUpdated }) {
 
         <div className="space-y-2.5 pb-24">
           {units.map((unit) => (
-            <div
-              key={unit.id}
-              className="p-3 bg-white border border-neutral-200 rounded-btn flex items-center justify-between gap-3 text-xs shadow-sm hover:border-neutral-300 transition-colors"
-            >
+            <div key={unit.id} className="p-3 bg-white border border-neutral-200 rounded-btn flex items-center justify-between gap-3 text-xs shadow-sm hover:border-neutral-300 transition-colors">
               <div className="flex-1">
                 <p className="font-bold text-neutral-900">{unit.serial_number}</p>
                 <p className="text-[11px] text-neutral-500">Kondisi: {unit.condition || 'Normal'}</p>
               </div>
               <div className="w-48">
-                <Select
-                  options={STATUS_OPTIONS}
-                  value={unit.status}
-                  onChange={(val) => handleStatusChange(unit.id, val)}
-                />
+                <Select options={STATUS_OPTIONS} value={unit.status} onChange={(val) => handleStatusChange(unit.id, val)} />
               </div>
               <button
                 type="button"
