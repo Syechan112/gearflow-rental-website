@@ -19,6 +19,8 @@ import { CatalogPage } from '@/features/customer-portal/pages/CatalogPage';
 import { InventoryPage } from '@/features/inventory/pages/InventoryPage';
 import { BookingsPage } from '@/features/bookings/pages/BookingsPage';
 import { RentalsPage } from '@/features/rental-orders/pages/RentalsPage';
+import { CheckoutPage } from '@/features/rental-orders/pages/CheckoutPage';
+import { ReturnsPage } from '@/features/rental-orders/pages/ReturnsPage';
 import { CustomersPage } from '@/features/customers/pages/CustomersPage';
 import { MaintenancePage } from '@/features/maintenance/pages/MaintenancePage';
 import { BundlesPage } from '@/features/bundles/pages/BundlesPage';
@@ -76,8 +78,8 @@ export const router = createBrowserRouter([
           { path: ROUTES.STAFF_INVENTORY, element: <InventoryPage /> },
           { path: ROUTES.STAFF_BOOKINGS, element: <BookingsPage /> },
           { path: ROUTES.STAFF_RENTALS, element: <RentalsPage /> },
-          { path: ROUTES.STAFF_CHECKOUT, element: <RentalsPage /> },
-          { path: ROUTES.STAFF_RETURNS, element: <RentalsPage /> },
+          { path: ROUTES.STAFF_CHECKOUT, element: <CheckoutPage /> },
+          { path: ROUTES.STAFF_RETURNS, element: <ReturnsPage /> },
           { path: ROUTES.STAFF_MAINTENANCE, element: <MaintenancePage /> },
         ],
       },
