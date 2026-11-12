@@ -1,6 +1,7 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { Navbar } from './Navbar';
+import { CustomerBottomNav } from './CustomerBottomNav';
 import { ROUTES } from '@/constants/routes';
 import { ShoppingBag, Calendar, History, User } from 'lucide-react';
 import { cn } from '@/utils/cn';
@@ -14,10 +15,10 @@ const CUSTOMER_NAV = [
 
 export function CustomerLayout() {
   return (
-    <div className="min-h-screen flex flex-col bg-background">
+    <div className="min-h-screen flex flex-col bg-background pb-16 lg:pb-0">
       <Navbar />
-      {/* Commerce Subheader Navigation */}
-      <div className="bg-white border-b border-neutral-200">
+      {/* Desktop subheader commerce navigation */}
+      <div className="hidden lg:block bg-white border-b border-neutral-200">
         <div className="mx-auto max-w-screen-2xl px-4 sm:px-6 lg:px-8">
           <nav className="flex space-x-6 overflow-x-auto py-2.5">
             {CUSTOMER_NAV.map((item) => {
@@ -43,9 +44,12 @@ export function CustomerLayout() {
           </nav>
         </div>
       </div>
+
       <main className="flex-1">
         <Outlet />
       </main>
+
+      <CustomerBottomNav />
     </div>
   );
 }
