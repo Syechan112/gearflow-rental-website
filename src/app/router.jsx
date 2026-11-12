@@ -78,9 +78,31 @@ export const router = createBrowserRouter([
           { path: ROUTES.STAFF_INVENTORY, element: <InventoryPage /> },
           { path: ROUTES.STAFF_BOOKINGS, element: <BookingsPage /> },
           { path: ROUTES.STAFF_RENTALS, element: <RentalsPage /> },
-          { path: ROUTES.STAFF_CHECKOUT, element: <CheckoutPage /> },
-          { path: ROUTES.STAFF_RETURNS, element: <ReturnsPage /> },
+          {
+            path: ROUTES.STAFF_CHECKOUT,
+            element: (
+              <ProtectedRoute requiredPermission="can_checkout">
+                <CheckoutPage />
+              </ProtectedRoute>
+            ),
+          },
+          {
+            path: ROUTES.STAFF_RETURNS,
+            element: (
+              <ProtectedRoute requiredPermission="can_checkout">
+                <ReturnsPage />
+              </ProtectedRoute>
+            ),
+          },
           { path: ROUTES.STAFF_MAINTENANCE, element: <MaintenancePage /> },
+          {
+            path: ROUTES.STAFF_REPORTS,
+            element: (
+              <ProtectedRoute requiredPermission="can_view_reports">
+                <ReportsPage />
+              </ProtectedRoute>
+            ),
+          },
         ],
       },
     ],

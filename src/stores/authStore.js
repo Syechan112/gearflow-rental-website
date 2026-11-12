@@ -1,6 +1,9 @@
 import { create } from 'zustand';
 import { ROLES } from '@/constants/roles';
 import { userRepository } from '@/database/repositories/userRepository';
+import { subscribeToDbChanges } from '@/utils/dbEvents';
+
+let isSubscribed = false;
 
 export const useAuthStore = create((set, get) => ({
   user: null,
@@ -8,11 +11,21 @@ export const useAuthStore = create((set, get) => ({
   isLoading: true,
 
   initAuth: async () => {
+    if (!isSubscribed) {
+      isSubscribed = true;
+      subscribeToDbChanges(() => {
+        get().refreshUser();
+      });
+    }
+
     try {
       const savedUser = localStorage.getItem('gearflow_user');
       if (savedUser) {
         const parsed = JSON.parse(savedUser);
-        set({ user: parsed, isAuthenticated: true, isLoading: false });
+        const freshUser = await userRepository.getById(parsed.id);
+        const activeUser = freshUser || parsed;
+        set({ user: activeUser, isAuthenticated: true, isLoading: false });
+        localStorage.setItem('gearflow_user', JSON.stringify(activeUser));
         return;
       }
       // Default to owner on first load
@@ -25,6 +38,20 @@ export const useAuthStore = create((set, get) => ({
       }
     } catch {
       set({ user: null, isAuthenticated: false, isLoading: false });
+    }
+  },
+
+  refreshUser: async () => {
+    const current = get().user;
+    if (!current?.id) return;
+    try {
+      const fresh = await userRepository.getById(current.id);
+      if (fresh) {
+        set({ user: fresh });
+        localStorage.setItem('gearflow_user', JSON.stringify(fresh));
+      }
+    } catch (err) {
+      console.error('Failed to refresh user auth:', err);
     }
   },
 

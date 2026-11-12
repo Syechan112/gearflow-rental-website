@@ -27,6 +27,11 @@ export const SEED_USERS = [
     email: 'staff@gearflow.local',
     role: ROLES.STAFF,
     avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=150&auto=format&fit=crop&q=80',
+    permissions: {
+      can_checkout: true,
+      can_approve_booking: true,
+      can_view_reports: false,
+    },
     createdAt: new Date().toISOString(),
   },
   {

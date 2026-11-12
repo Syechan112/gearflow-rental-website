@@ -23,6 +23,7 @@ export const ROUTES = {
   STAFF_CHECKOUT: '/staff/checkout',
   STAFF_RETURNS: '/staff/returns',
   STAFF_MAINTENANCE: '/staff/maintenance',
+  STAFF_REPORTS: '/staff/reports',
 
   // Customer routes
   CUSTOMER_PORTAL: '/customer/portal',

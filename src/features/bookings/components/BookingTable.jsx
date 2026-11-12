@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { BOOKING_STATUS } from '@/constants/statuses';
 import { Eye, Check, X } from 'lucide-react';
 
-export function BookingTable({ bookings, equipment, customers, onView, onApprove, onReject }) {
+export function BookingTable({ bookings, equipment, customers, onView, onApprove, onReject, canApprove = true }) {
   if (bookings.length === 0) {
     return (
       <div className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-200 rounded-card">
@@ -52,10 +52,16 @@ export function BookingTable({ bookings, equipment, customers, onView, onApprove
                         <Eye className="w-4 h-4" />
                       </button>
                       {b.status === BOOKING_STATUS.PENDING && (
-                        <>
-                          <Button size="sm" variant="secondary" icon={Check} onClick={() => onApprove(b.id)}>Setujui</Button>
-                          <Button size="sm" variant="destructive" icon={X} onClick={() => onReject(b.id)}>Tolak</Button>
-                        </>
+                        canApprove ? (
+                          <>
+                            <Button size="sm" variant="secondary" icon={Check} onClick={() => onApprove(b.id)}>Setujui</Button>
+                            <Button size="sm" variant="destructive" icon={X} onClick={() => onReject(b.id)}>Tolak</Button>
+                          </>
+                        ) : (
+                          <span className="px-2 py-0.5 text-[10px] text-neutral-400 italic bg-neutral-100 rounded">
+                            Perlu Otoritas
+                          </span>
+                        )
                       )}
                     </div>
                   </td>

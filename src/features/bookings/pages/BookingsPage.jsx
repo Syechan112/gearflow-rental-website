@@ -11,10 +11,14 @@ import { BookingDetailModal } from '../components/BookingDetailModal';
 import { BookingCalendar } from '../components/BookingCalendar';
 import { BookingTable } from '../components/BookingTable';
 import { BOOKING_STATUS } from '@/constants/statuses';
+import { useAuthStore } from '@/stores/authStore';
+import { hasPermission } from '@/constants/permissions';
 import { Plus, Search, Calendar, Table } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function BookingsPage() {
+  const { user } = useAuthStore();
+  const canApprove = hasPermission(user, 'can_approve_booking');
   const [bookings, setBookings] = useState([]);
   const [equipment, setEquipment] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -38,6 +42,10 @@ export function BookingsPage() {
   useEffect(() => { loadData(); }, []);
 
   const handleUpdateStatus = async (id, status) => {
+    if (!canApprove) {
+      toast.error('Otoritas ditolak: Anda tidak memiliki izin untuk menyetujui atau menolak booking.');
+      return;
+    }
     await bookingRepository.updateStatus(id, status);
     toast.success(`Booking ${id} ${status}!`);
     loadData();
@@ -91,6 +99,7 @@ export function BookingsPage() {
           bookings={filtered}
           equipment={equipment}
           customers={customers}
+          canApprove={canApprove}
           onView={(b) => setViewingBooking(b)}
           onApprove={(id) => handleUpdateStatus(id, BOOKING_STATUS.APPROVED)}
           onReject={(id) => handleUpdateStatus(id, BOOKING_STATUS.REJECTED)}
@@ -101,6 +110,7 @@ export function BookingsPage() {
       <BookingDetailModal
         isOpen={!!viewingBooking}
         booking={viewingBooking}
+        canApprove={canApprove}
         equipment={equipment.find((e) => e.id === viewingBooking?.equipment_id)}
         customer={customers.find((c) => c.id === viewingBooking?.customer_id)}
         onClose={() => setViewingBooking(null)}

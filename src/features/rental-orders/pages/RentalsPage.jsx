@@ -15,9 +15,13 @@ import { generateInvoicePdf } from '../utils/generateInvoicePdf';
 import { Input } from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { RENTAL_STATUS, BOOKING_STATUS } from '@/constants/statuses';
+import { useAuthStore } from '@/stores/authStore';
+import { hasPermission } from '@/constants/permissions';
 import { Search, Plus, ArrowUpRight } from 'lucide-react';
 
 export function RentalsPage() {
+  const { user } = useAuthStore();
+  const canCheckout = hasPermission(user, 'can_checkout');
   const [rentals, setRentals] = useState([]);
   const [equipment, setEquipment] = useState([]);
   const [customers, setCustomers] = useState([]);
@@ -61,7 +65,7 @@ export function RentalsPage() {
         title="Transaksi Rental Berjalan & Pengembalian"
         description="Pelacakan status order aktif, check-out serah terima unit, dan inspeksi pengembalian fisik."
         action={
-          approvedBookings.length > 0 && (
+          approvedBookings.length > 0 && canCheckout && (
             <Button size="sm" icon={ArrowUpRight} onClick={() => setCheckoutBooking(approvedBookings[0])}>
               Check-out Booking ({approvedBookings.length})
             </Button>
@@ -93,6 +97,7 @@ export function RentalsPage() {
         equipment={equipment}
         customers={customers}
         units={units}
+        canCheckout={canCheckout}
         onView={(r) => setDetailRental(r)}
         onReturn={(r) => setReturnRental(r)}
         onPayment={(r) => setPaymentRental(r)}

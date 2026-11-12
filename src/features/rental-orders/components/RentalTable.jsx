@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/Button';
 import { RENTAL_STATUS } from '@/constants/statuses';
 import { Eye, ArrowDownLeft, DollarSign, FileText } from 'lucide-react';
 
-export function RentalTable({ rentals, equipment, customers, units, onView, onReturn, onPayment, onPrintInvoice }) {
+export function RentalTable({ rentals, equipment, customers, units, onView, onReturn, onPayment, onPrintInvoice, canCheckout = true }) {
   if (rentals.length === 0) {
     return (
       <div className="p-8 text-center text-xs text-neutral-500 bg-white border border-neutral-200 rounded-card">
@@ -69,9 +69,15 @@ export function RentalTable({ rentals, equipment, customers, units, onView, onRe
                           <Button size="sm" variant="secondary" icon={DollarSign} onClick={() => onPayment(r)}>
                             Bayar
                           </Button>
-                          <Button size="sm" icon={ArrowDownLeft} onClick={() => onReturn(r)}>
-                            Check-in
-                          </Button>
+                          {canCheckout ? (
+                            <Button size="sm" icon={ArrowDownLeft} onClick={() => onReturn(r)}>
+                              Check-in
+                            </Button>
+                          ) : (
+                            <span className="px-2 py-1 text-[10px] text-neutral-400 italic bg-neutral-100 rounded">
+                              Izin Check-in Dibatasi
+                            </span>
+                          )}
                         </>
                       )}
                     </div>

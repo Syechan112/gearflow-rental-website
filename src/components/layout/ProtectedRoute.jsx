@@ -3,8 +3,10 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuthStore } from '@/stores/authStore';
 import { ROUTES } from '@/constants/routes';
 import { ROLES } from '@/constants/roles';
+import { hasPermission } from '@/constants/permissions';
+import { toast } from 'sonner';
 
-export function ProtectedRoute({ allowedRoles = [] }) {
+export function ProtectedRoute({ allowedRoles = [], requiredPermission = null, children }) {
   const { user, isAuthenticated, isLoading } = useAuthStore();
 
   if (isLoading) {
@@ -28,5 +30,10 @@ export function ProtectedRoute({ allowedRoles = [] }) {
     return <Navigate to={ROUTES.CUSTOMER_PORTAL} replace />;
   }
 
-  return <Outlet />;
+  if (requiredPermission && !hasPermission(user, requiredPermission)) {
+    toast.error('Akses ditolak: Anda tidak memiliki izin untuk halaman tersebut.');
+    return <Navigate to={user.role === ROLES.OWNER ? ROUTES.OWNER_DASHBOARD : ROUTES.STAFF_DASHBOARD} replace />;
+  }
+
+  return children ? children : <Outlet />;
 }

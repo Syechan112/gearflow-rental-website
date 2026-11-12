@@ -9,13 +9,17 @@ import { formatCurrency } from '@/utils/formatCurrency';
 import { Check, X, Ban } from 'lucide-react';
 import { toast } from 'sonner';
 
-export function BookingDetailModal({ booking, equipment, customer, isOpen, onClose, onUpdated }) {
+export function BookingDetailModal({ booking, equipment, customer, isOpen, onClose, onUpdated, canApprove = true }) {
   const [rejectReason, setRejectReason] = useState('');
   const [isRejecting, setIsRejecting] = useState(false);
 
   if (!booking) return null;
 
   const handleAction = async (status, notes = '') => {
+    if (!canApprove) {
+      toast.error('Otoritas ditolak: Anda tidak memiliki izin untuk mengubah status booking.');
+      return;
+    }
     await bookingRepository.updateStatus(booking.id, status, notes);
     toast.success(`Status booking diubah menjadi ${status}`);
     setIsRejecting(false);
@@ -79,12 +83,18 @@ export function BookingDetailModal({ booking, equipment, customer, isOpen, onClo
         ) : (
           <div className="flex justify-end gap-2 pt-2 border-t border-neutral-100">
             {booking.status === BOOKING_STATUS.PENDING && (
-              <>
-                <Button size="sm" variant="destructive" icon={X} onClick={() => setIsRejecting(true)}>Tolak Booking</Button>
-                <Button size="sm" icon={Check} onClick={() => handleAction(BOOKING_STATUS.APPROVED)}>Setujui Booking</Button>
-              </>
+              canApprove ? (
+                <>
+                  <Button size="sm" variant="destructive" icon={X} onClick={() => setIsRejecting(true)}>Tolak Booking</Button>
+                  <Button size="sm" icon={Check} onClick={() => handleAction(BOOKING_STATUS.APPROVED)}>Setujui Booking</Button>
+                </>
+              ) : (
+                <div className="w-full p-2 text-center text-[11px] text-neutral-500 bg-neutral-50 border border-neutral-200 rounded-btn">
+                  Anda tidak memiliki hak akses untuk menyetujui atau menolak booking (Hubungi Owner).
+                </div>
+              )
             )}
-            {booking.status === BOOKING_STATUS.APPROVED && (
+            {booking.status === BOOKING_STATUS.APPROVED && canApprove && (
               <Button size="sm" variant="secondary" icon={Ban} onClick={() => handleAction(BOOKING_STATUS.CANCELLED, 'Dibatalkan oleh admin/pelanggan')}>
                 Batalkan Booking
               </Button>
