@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Toaster } from 'sonner';
 import { seedDatabase } from '@/database/seeders/initialSeed';
 import { useAuthStore } from '@/stores/authStore';
+import { runAutomationJobs } from '@/features/rental-orders/utils/automationEngine';
 
 export function Providers({ children }) {
   const [isReady, setIsReady] = useState(false);
@@ -12,6 +13,7 @@ export function Providers({ children }) {
       try {
         await seedDatabase();
         await initAuth();
+        await runAutomationJobs();
       } catch (err) {
         console.error('Initialization error:', err);
       } finally {
