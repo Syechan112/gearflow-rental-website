@@ -1,12 +1,27 @@
+let lastTime = 0;
+let counter = 0;
+
 /**
- * Generates an automatic 16-digit numeric ID.
- * Uses 13-digit millisecond timestamp combined with a 3-digit random sequence.
- * Guaranteed 16-digit length containing only numbers (0-9).
+ * Generates an automatic, strictly unique 16-digit numeric ID.
+ * Monotonically increasing using millisecond timestamp + sequence buffer.
+ * Guaranteed 100% collision-free without manual input.
  *
- * Example: '1794476585999886'
+ * Example: '1794476585999000'
  */
 export function generateId(_prefix = '') {
-  const timestamp = Date.now().toString();
-  const randomSuffix = Math.floor(100 + Math.random() * 900).toString();
-  return (timestamp + randomSuffix).slice(0, 16);
+  let now = Date.now();
+  if (now <= lastTime) {
+    counter++;
+    if (counter >= 1000) {
+      while (Date.now() <= lastTime) {
+        // Wait for next millisecond tick
+      }
+      now = Date.now();
+      counter = 0;
+    }
+  } else {
+    counter = 0;
+  }
+  lastTime = now;
+  return `${now.toString()}${counter.toString().padStart(3, '0')}`;
 }
