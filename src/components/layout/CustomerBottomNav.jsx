@@ -1,10 +1,11 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { ROUTES } from '@/constants/routes';
-import { ShoppingBag, Calendar, History, User } from 'lucide-react';
+import { LayoutDashboard, ShoppingBag, Calendar, History, User } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 const BOTTOM_NAV_ITEMS = [
+  { to: ROUTES.CUSTOMER_PORTAL, label: 'Dashboard', icon: LayoutDashboard },
   { to: ROUTES.CATALOG, label: 'Katalog', icon: ShoppingBag },
   { to: ROUTES.CUSTOMER_BOOKINGS, label: 'Booking', icon: Calendar },
   { to: ROUTES.CUSTOMER_RENTALS, label: 'Rental', icon: History },
