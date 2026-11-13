@@ -27,6 +27,7 @@ import { BundlesPage } from '@/features/bundles/pages/BundlesPage';
 import { StaffManagementPage } from '@/features/staff/pages/StaffManagementPage';
 import { ReportsPage } from '@/features/reports/pages/ReportsPage';
 import { SettingsPage } from '@/features/settings/pages/SettingsPage';
+import { NotFoundPage } from '@/features/errors/pages/NotFoundPage';
 
 function RootRedirect() {
   const savedUser = localStorage.getItem('gearflow_user');
@@ -121,5 +122,6 @@ export const router = createBrowserRouter([
       },
     ],
   },
-  { path: '*', element: <Navigate to={ROUTES.HOME} replace /> },
+  { path: ROUTES.NOT_FOUND, element: <NotFoundPage /> },
+  { path: '*', element: <NotFoundPage /> },
 ]);

@@ -2,6 +2,7 @@ export const ROUTES = {
   HOME: '/',
   LOGIN: '/login',
   CATALOG: '/catalog',
+  NOT_FOUND: '/404',
   
   // Owner routes
   OWNER_DASHBOARD: '/owner/dashboard',
